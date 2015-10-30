@@ -14,7 +14,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.benmclean.badchallenge.model.GameWorld;
 import net.benmclean.badchallenge.model.TileEnum;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class GameScreen implements Screen, InputProcessor {
     OrthographicCamera cam;
@@ -38,6 +43,21 @@ public class GameScreen implements Screen, InputProcessor {
 
     private GameWorld world = new GameWorld(SEED);
 
+    public final static Set<Integer> TRACKED_KEYS = Collections.unmodifiableSet(
+            new HashSet<Integer>(Arrays.asList(
+                    Input.Keys.UP,
+                    Input.Keys.DOWN,
+                    Input.Keys.LEFT,
+                    Input.Keys.RIGHT,
+                    Input.Keys.SPACE,
+                    Input.Keys.ESCAPE,
+                    Input.Keys.ENTER,
+                    Input.Keys.ALT_LEFT,
+                    Input.Keys.ALT_RIGHT
+                    )));
+
+    public HashMap<Integer, Boolean> keyPressed = new HashMap<Integer, Boolean>();
+
     @Override
     public void show() {
         cam = new OrthographicCamera();
@@ -53,16 +73,20 @@ public class GameScreen implements Screen, InputProcessor {
         tree = new TextureRegion(img, 391, 153, 16, 16);
         character = new TextureRegion(charSheet, 0*17, 10*17, 16, 16);
         font = new BitmapFont();
+
+        for (int key : TRACKED_KEYS)
+            keyPressed.put(key, false);
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
     public void render (float delta) {
-        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) Gdx.app.exit();
-        if(Gdx.input.isKeyPressed(Input.Keys.UP) && TileEnum.canStep(world.eval(posX, posY + 1))) posY++;
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && TileEnum.canStep(world.eval(posX+1, posY))) posX++;
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN) && TileEnum.canStep(world.eval(posX, posY-1))) posY--;
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && TileEnum.canStep(world.eval(posX-1, posY))) posX--;
-        if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {posX=0; posY=0;}
+        if (keyPressed.get(Input.Keys.ESCAPE)) Gdx.app.exit();
+        if (keyPressed.get(Input.Keys.UP) && TileEnum.canStep(world.eval(posX, posY + 1))) posY++;
+        if(keyPressed.get(Input.Keys.RIGHT) && TileEnum.canStep(world.eval(posX+1, posY))) posX++;
+        if(keyPressed.get(Input.Keys.DOWN) && TileEnum.canStep(world.eval(posX, posY-1))) posY--;
+        if(keyPressed.get(Input.Keys.LEFT) && TileEnum.canStep(world.eval(posX-1, posY))) posX--;
+        if(keyPressed.get(Input.Keys.SPACE)) {posX=0; posY=0;}
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -114,12 +138,14 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        return false;
+        if (TRACKED_KEYS.contains(keycode)) keyPressed.put(keycode, true);
+        return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        return false;
+        if (TRACKED_KEYS.contains(keycode)) keyPressed.put(keycode, false);
+        return true;
     }
 
     @Override
