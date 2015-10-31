@@ -40,6 +40,9 @@ public class GameScreen implements Screen, InputProcessor {
     public static final int VIRTUAL_HEIGHT=480;
     public static Random random = new Random(SEED);
 
+    public static final double REPEAT_RATE = 0.15;
+    private double timeSinceRepeat = 0;
+
 
     private GameWorld world = new GameWorld(SEED);
 
@@ -79,14 +82,29 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.input.setInputProcessor(this);
     }
 
+    public void moveFromInput () {
+        timeSinceRepeat = 0;
+        if (keyPressed.get(Input.Keys.ESCAPE)) Gdx.app.exit();
+        if (keyPressed.get(Input.Keys.UP) && TileEnum.canStep(world.eval(posX, posY + 1)))
+            posY++;
+        if (keyPressed.get(Input.Keys.RIGHT) && TileEnum.canStep(world.eval(posX + 1, posY)))
+            posX++;
+        if (keyPressed.get(Input.Keys.DOWN) && TileEnum.canStep(world.eval(posX, posY - 1)))
+            posY--;
+        if (keyPressed.get(Input.Keys.LEFT) && TileEnum.canStep(world.eval(posX - 1, posY)))
+            posX--;
+        if (keyPressed.get(Input.Keys.SPACE)) {
+            posX = 0;
+            posY = 0;
+        }
+    }
+
     @Override
     public void render (float delta) {
-        if (keyPressed.get(Input.Keys.ESCAPE)) Gdx.app.exit();
-        if (keyPressed.get(Input.Keys.UP) && TileEnum.canStep(world.eval(posX, posY + 1))) posY++;
-        if(keyPressed.get(Input.Keys.RIGHT) && TileEnum.canStep(world.eval(posX+1, posY))) posX++;
-        if(keyPressed.get(Input.Keys.DOWN) && TileEnum.canStep(world.eval(posX, posY-1))) posY--;
-        if(keyPressed.get(Input.Keys.LEFT) && TileEnum.canStep(world.eval(posX-1, posY))) posX--;
-        if(keyPressed.get(Input.Keys.SPACE)) {posX=0; posY=0;}
+
+        timeSinceRepeat += delta;
+
+        if (timeSinceRepeat >= REPEAT_RATE) moveFromInput();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -139,6 +157,7 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (TRACKED_KEYS.contains(keycode)) keyPressed.put(keycode, true);
+        moveFromInput();
         return true;
     }
 
