@@ -1,8 +1,11 @@
 package net.benmclean.badchallenge.model;
 
+import java.util.HashMap;
+
 public class GameWorld {
 	private WorldGenerator genesis;
-	public static final int CHUNK_SIZE = 64;
+	public static final int CHUNK_SIZE = 8;
+    public HashMap<String, TileEnum[][]> chunk = new HashMap<String, TileEnum[][]>();
 	
 	public GameWorld (long SEED) {
 		genesis = new WorldGenerator(SEED);
@@ -13,15 +16,49 @@ public class GameWorld {
 	}
 	
 	public TileEnum eval (int x, int y) {
-		return genesis.eval(x, y);
+		if (!chunk.containsKey(chunkName(x, y))) {
+            generateChunk(x, y);
+        }
+        //        System.out.println("Evaluating x: " + x + ", y: " + y);
+//        System.out.println("Chunk: " + chunkName(x, y));
+//        System.out.println("withinChunk x: " + withinChunk(x) + ", y: " + withinChunk(y));
+
+        //return genesis.eval(x, y);
+        return chunk.get(chunkName(x, y))[withinChunk(x)][withinChunk(y)];
 	}
-	
-	public static final String toChunkName (int x, int y) {
-		int answerX = x / CHUNK_SIZE;
-		int answerY = y / CHUNK_SIZE;
-		if (x < 0) answerX--;
-		if (y < 0) answerY--;
-		
-		return Integer.toString(answerX) + "_" + Integer.toString(answerY);
+
+    public void generateChunk(int x, int y) {
+        int startX = chunkToCoord(coordToChunk(x));
+        int startY = chunkToCoord(coordToChunk(y));
+        chunk.put(chunkName(x, y), new TileEnum[CHUNK_SIZE][CHUNK_SIZE]);
+        for (int row=startX; row<startX+CHUNK_SIZE; row++)
+            for (int col=startY; col<startY+CHUNK_SIZE; col++)
+                chunk.get(chunkName(x, y))[withinChunk(row)][withinChunk(col)] =
+                        genesis.eval(row, col);
+    }
+
+    public static int withinChunk(int x) {
+        if (x < 0)
+            return CHUNK_SIZE - (Math.abs(x) - 1) % CHUNK_SIZE - 1;
+        else
+            return x % CHUNK_SIZE;
+    }
+
+    public static int chunkToCoord(int x) {
+        if (x >= 0)
+            return (x+1) * CHUNK_SIZE;
+        else
+            return x * CHUNK_SIZE;
+    }
+
+    public static int coordToChunk(int x) {
+        if (x < 0)
+            return ((x+1) / CHUNK_SIZE) - 1;
+        else
+            return x / CHUNK_SIZE;
+    }
+
+	public static String chunkName (int x, int y) {
+		return Integer.toString(coordToChunk(x)) + "_" + Integer.toString(coordToChunk(y));
 	}
 }
