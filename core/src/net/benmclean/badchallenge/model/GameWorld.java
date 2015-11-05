@@ -3,28 +3,28 @@ package net.benmclean.badchallenge.model;
 import java.util.HashMap;
 
 public class GameWorld {
-	private WorldGenerator genesis;
-	public static final int CHUNK_SIZE = 16;
+    private WorldGenerator genesis;
+    public static final int CHUNK_SIZE = 16;
     public HashMap<String, TileEnum[][]> chunk = new HashMap<String, TileEnum[][]>();
-	
-	public GameWorld (long SEED) {
-		genesis = new WorldGenerator(SEED);
-	}
+
+    public GameWorld (long SEED) {
+        genesis = new WorldGenerator(SEED);
+    }
 
     public TileEnum genesisEval (int x, int y) {
         return genesis.eval(x, y);
     }
 
-	public final long getSeed () {
-		return genesis.getSeed();
-	}
-	
-	public TileEnum eval (int x, int y) {
-		if (!chunk.containsKey(chunkName(x, y))) {
+    public final long getSeed () {
+        return genesis.getSeed();
+    }
+
+    public TileEnum eval (int x, int y) {
+        if (!chunk.containsKey(chunkName(x, y))) {
             generateChunk(x, y);
         }
         return chunk.get(chunkName(x, y))[withinChunk(x)][withinChunk(y)];
-	}
+    }
 
     public void generateChunk(int x, int y) {
         int startX = chunkToCoord(coordToChunk(x));
@@ -54,7 +54,7 @@ public class GameWorld {
             return x / CHUNK_SIZE;
     }
 
-	public static String chunkName (int x, int y) {
-		return Integer.toString(coordToChunk(x)) + "_" + Integer.toString(coordToChunk(y));
-	}
+    public static String chunkName (int x, int y) {
+        return Integer.toString(coordToChunk(x)) + "_" + Integer.toString(coordToChunk(y));
+    }
 }

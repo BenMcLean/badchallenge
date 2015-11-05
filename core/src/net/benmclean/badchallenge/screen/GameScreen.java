@@ -14,9 +14,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import net.benmclean.badchallenge.model.GameWorld;
 import net.benmclean.badchallenge.model.TileEnum;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -40,25 +40,32 @@ public class GameScreen implements Screen, InputProcessor {
     public static final int VIRTUAL_HEIGHT=480;
     public static Random random = new Random(SEED);
 
-    public static final double REPEAT_RATE = 0.15;
+    public static final double REPEAT_RATE = 0.12;
     private double timeSinceRepeat = 0;
 
     private GameWorld world = new GameWorld(SEED);
 
+    public final static ArrayList<Integer> TRACKED_KEYS_ARRAY = new ArrayList<Integer>(Arrays.asList(
+            Input.Keys.UP,
+            Input.Keys.DOWN,
+            Input.Keys.LEFT,
+            Input.Keys.RIGHT,
+            Input.Keys.SPACE,
+            Input.Keys.ESCAPE,
+            Input.Keys.ENTER,
+            Input.Keys.ALT_LEFT,
+            Input.Keys.ALT_RIGHT
+    ));
     public final static Set<Integer> TRACKED_KEYS = Collections.unmodifiableSet(
-            new HashSet<Integer>(Arrays.asList(
-                    Input.Keys.UP,
-                    Input.Keys.DOWN,
-                    Input.Keys.LEFT,
-                    Input.Keys.RIGHT,
-                    Input.Keys.SPACE,
-                    Input.Keys.ESCAPE,
-                    Input.Keys.ENTER,
-                    Input.Keys.ALT_LEFT,
-                    Input.Keys.ALT_RIGHT
-                    )));
+            new HashSet<Integer>(TRACKED_KEYS_ARRAY));
+    public boolean[] keyPressed = new boolean[TRACKED_KEYS_ARRAY.size()];
 
-    public HashMap<Integer, Boolean> keyPressed = new HashMap<Integer, Boolean>();
+    public static int keyInt(int keycode) {
+        for (int x = 0; x < TRACKED_KEYS_ARRAY.size(); x++)
+            if (TRACKED_KEYS_ARRAY.get(x) == keycode)
+                return x;
+        throw new ArrayIndexOutOfBoundsException();  // This keycode is not contained in TRACKED_KEYS_ARRAY
+    }
 
     @Override
     public void show() {
@@ -76,25 +83,32 @@ public class GameScreen implements Screen, InputProcessor {
         character = new TextureRegion(charSheet, 0*17, 10*17, 16, 16);
         font = new BitmapFont();
 
-        for (int key : TRACKED_KEYS)
-            keyPressed.put(key, false);
+        for (int key : TRACKED_KEYS_ARRAY)
+            keyPressed[keyInt(key)] = false;
         Gdx.input.setInputProcessor(this);
     }
 
     public void moveFromInput () {
-        timeSinceRepeat = 0;
-        if (keyPressed.get(Input.Keys.ESCAPE)) Gdx.app.exit();
-        if (keyPressed.get(Input.Keys.UP) && TileEnum.canStep(world.eval(posX, posY + 1)))
-            posY++;
-        if (keyPressed.get(Input.Keys.RIGHT) && TileEnum.canStep(world.eval(posX + 1, posY)))
-            posX++;
-        if (keyPressed.get(Input.Keys.DOWN) && TileEnum.canStep(world.eval(posX, posY - 1)))
-            posY--;
-        if (keyPressed.get(Input.Keys.LEFT) && TileEnum.canStep(world.eval(posX - 1, posY)))
-            posX--;
-        if (keyPressed.get(Input.Keys.SPACE)) {
-            posX = 0;
-            posY = 0;
+        for (int key = 0; key < TRACKED_KEYS_ARRAY.size(); key++)
+            if (keyPressed[key])
+                moveFromInput(TRACKED_KEYS_ARRAY.get(key));
+    }
+
+    public void moveFromInput (int keycode) {
+        switch (keycode) {
+            case Input.Keys.ESCAPE: Gdx.app.exit();
+            case Input.Keys.UP: if (TileEnum.canStep(world.eval(posX, posY + 1)))
+                posY++; break;
+            case Input.Keys.RIGHT: if (TileEnum.canStep(world.eval(posX + 1, posY)))
+                posX++; break;
+            case Input.Keys.DOWN: if (TileEnum.canStep(world.eval(posX, posY - 1)))
+                posY--; break;
+            case Input.Keys.LEFT: if (TileEnum.canStep(world.eval(posX - 1, posY)))
+                posX--; break;
+            case Input.Keys.SPACE:
+                posX = 0;
+                posY = 0;
+                break;
         }
     }
 
@@ -103,7 +117,10 @@ public class GameScreen implements Screen, InputProcessor {
 
         timeSinceRepeat += delta;
 
-        if (timeSinceRepeat >= REPEAT_RATE) moveFromInput();
+        if (timeSinceRepeat >= REPEAT_RATE) {
+            timeSinceRepeat = 0;
+            moveFromInput();
+        }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -155,14 +172,15 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (TRACKED_KEYS.contains(keycode)) keyPressed.put(keycode, true);
-        moveFromInput();
+        if (TRACKED_KEYS.contains(keycode)) keyPressed[keyInt(keycode)] = true;
+        timeSinceRepeat = 0;
+        moveFromInput(keycode);
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if (TRACKED_KEYS.contains(keycode)) keyPressed.put(keycode, false);
+        if (TRACKED_KEYS.contains(keycode)) keyPressed[keyInt(keycode)] = false;
         return true;
     }
 
