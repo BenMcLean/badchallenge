@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import net.benmclean.badchallenge.controller.GameWorldController;
+import net.benmclean.badchallenge.model.Direction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +32,6 @@ public class GameScreen implements Screen, InputProcessor {
     private TextureRegion tree;
     private TextureRegion character;
     private BitmapFont font;
-    private int posX=0;
-    private int posY=0;
 
     public static final long SEED = 42; //new Random().nextInt();
     public static final int VIRTUAL_WIDTH=640;
@@ -96,17 +95,13 @@ public class GameScreen implements Screen, InputProcessor {
     public void moveFromInput (int keycode) {
         switch (keycode) {
             case Input.Keys.ESCAPE: Gdx.app.exit();
-            case Input.Keys.UP: if (world.eval(posX, posY + 1).canStep())
-                posY++; break;
-            case Input.Keys.RIGHT: if (world.eval(posX + 1, posY).canStep())
-                posX++; break;
-            case Input.Keys.DOWN: if (world.eval(posX, posY - 1).canStep())
-                posY--; break;
-            case Input.Keys.LEFT: if (world.eval(posX - 1, posY).canStep())
-                posX--; break;
+            case Input.Keys.UP: world.move(Direction.NORTH); break;
+            case Input.Keys.RIGHT: world.move(Direction.EAST); break;
+            case Input.Keys.DOWN: world.move(Direction.SOUTH); break;
+            case Input.Keys.LEFT: world.move(Direction.WEST); break;
             case Input.Keys.SPACE:
-                posX = 0;
-                posY = 0;
+                world.setX(0);
+                world.setY(0);
                 break;
         }
     }
@@ -127,7 +122,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         for (int x=0; x<40; x++)
             for (int y=0; y<30; y++) {
-                switch (world.eval(posX - 20 + x, posY - 15 + y)) {
+                switch (world.eval(world.getX() - 20 + x, world.getY() - 15 + y)) {
                     case LAND: batch.draw(land, 16*x, 16*y); break;
                     case BOX: batch.draw(land, 16*x, 16*y);
                         batch.draw(tree, 16*x, 16*y); break;
