@@ -10,7 +10,7 @@ public enum Tile {
 
     public boolean canPushTo() { return canPushTo(this); }
     public static boolean canPushTo(Tile x) {
-        return canStep(x);
+        return x == Tile.LAND || x == Tile.WATER;
     }
 
     public boolean canPush() { return canPush(this); }
@@ -18,13 +18,32 @@ public enum Tile {
         return x == Tile.BOX;
     }
 
-    public Tile afterPush() { return afterPush(this); }
-    public static Tile afterPush(Tile x) {
-        return Tile.BOX;
+    public Tile behindStep() { return behindStep(this); }
+    public static Tile behindStep(Tile x) {
+        return Tile.LAND;
     }
 
     public Tile behindPush() { return behindPush(this); }
     public static Tile behindPush(Tile x) {
         return Tile.LAND;
+    }
+
+    public Tile pushedBecomes (Tile into) {
+        /**
+         * @param into      What this tile will land on after being pushed
+         * @return          What the landing tile becomes after the push
+         */
+        return pushedBecomes(this, into);
+    }
+    public static Tile pushedBecomes(Tile pushed, Tile into) {
+        /**
+         * @param pushed    What tile is being pushed
+         * @param into      What the pushed tile will land on after being pushed
+         * @return          What the landing tile becomes after the push
+         */
+        if (pushed == Tile.BOX && into == Tile.WATER)
+            return Tile.MUD;
+        else
+            return pushed;
     }
 }

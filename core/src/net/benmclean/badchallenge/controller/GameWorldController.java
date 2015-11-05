@@ -49,13 +49,15 @@ public class GameWorldController {
         Tile destination2 = eval(posX + way.dx()*2, posY + way.dy()*2);
         // If you can push the block in front of you, and it can move into the tile you'd be pushing it onto:
         if (destination.canPush() && destination2.canPushTo()) {
-            // Set (the tile the block in front of you is moving onto) to be the block:
-            set(posX + way.dx()*2, posY + way.dy()*2, destination.afterPush());
+            // Set the tile the block is moving onto
+            set(posX + way.dx()*2, posY + way.dy()*2, destination.pushedBecomes(destination2));
             // Set (the tile in front of you) to be (whatever type of tile the block leaves behind after getting pushed):
             set(posX + way.dx(), posY + way.dy(), eval(posX + way.dx()*2, posY + way.dy()*2).behindPush());
+            return true;
         }
         // If you can step onto the tile in front of you:
         if (destination.canStep()) {
+            set(posX, posY, eval(posX, posY).behindStep());
             posX += way.dx();
             posY += way.dy();
             return true;
