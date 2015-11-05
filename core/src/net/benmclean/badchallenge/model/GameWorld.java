@@ -4,13 +4,17 @@ import java.util.HashMap;
 
 public class GameWorld {
 	private WorldGenerator genesis;
-	public static final int CHUNK_SIZE = 8;
+	public static final int CHUNK_SIZE = 16;
     public HashMap<String, TileEnum[][]> chunk = new HashMap<String, TileEnum[][]>();
 	
 	public GameWorld (long SEED) {
 		genesis = new WorldGenerator(SEED);
 	}
-	
+
+    public TileEnum genesisEval (int x, int y) {
+        return genesis.eval(x, y);
+    }
+
 	public final long getSeed () {
 		return genesis.getSeed();
 	}
@@ -19,11 +23,6 @@ public class GameWorld {
 		if (!chunk.containsKey(chunkName(x, y))) {
             generateChunk(x, y);
         }
-        //        System.out.println("Evaluating x: " + x + ", y: " + y);
-//        System.out.println("Chunk: " + chunkName(x, y));
-//        System.out.println("withinChunk x: " + withinChunk(x) + ", y: " + withinChunk(y));
-
-        //return genesis.eval(x, y);
         return chunk.get(chunkName(x, y))[withinChunk(x)][withinChunk(y)];
 	}
 
@@ -45,10 +44,7 @@ public class GameWorld {
     }
 
     public static int chunkToCoord(int x) {
-        if (x >= 0)
-            return (x+1) * CHUNK_SIZE;
-        else
-            return x * CHUNK_SIZE;
+        return x * CHUNK_SIZE;
     }
 
     public static int coordToChunk(int x) {

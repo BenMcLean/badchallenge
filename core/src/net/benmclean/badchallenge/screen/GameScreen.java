@@ -32,8 +32,8 @@ public class GameScreen implements Screen, InputProcessor {
     private TextureRegion tree;
     private TextureRegion character;
     private BitmapFont font;
-    private int posX=32;
-    private int posY=32;
+    private int posX=0;
+    private int posY=0;
 
     public static final long SEED = 42; //new Random().nextInt();
     public static final int VIRTUAL_WIDTH=640;
@@ -123,7 +123,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         batch.draw(character, 16*20, 16*15);
 
-        font.draw(batch, "(" + Integer.toString(posX) + ", " + Integer.toString(posY) + ") is chunk " + world.chunkName(posX, posY), 0, 16);
+//        font.draw(batch, "(" + Integer.toString(posX) + ", " + Integer.toString(posY) + ") is chunk " + world.chunkName(posX, posY), 0, 16);
         batch.end();
     }
 
