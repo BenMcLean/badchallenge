@@ -28,8 +28,8 @@ public class GameScreen implements Screen, InputProcessor {
     private Texture charSheet;
     private TextureRegion water;
     private TextureRegion land;
-    private TextureRegion sand;
-    private TextureRegion tree;
+    private TextureRegion mud;
+    private TextureRegion box;
     private TextureRegion character;
     private BitmapFont font;
 
@@ -76,8 +76,9 @@ public class GameScreen implements Screen, InputProcessor {
         charSheet = new Texture("roguelikeChar_transparent.png");
         water = new TextureRegion(img, 0, 0, 16, 16);
         land = new TextureRegion(img, 85, 17, 16, 16);
-        sand = new TextureRegion(img, 102, 17, 16, 16);
-        tree = new TextureRegion(img, 391, 153, 16, 16);
+        mud = new TextureRegion(img, 102, 17, 16, 16);
+        //tree = new TextureRegion(img, 391, 153, 16, 16);
+        box = new TextureRegion(img, 28*17, 2*17, 16, 16);
         character = new TextureRegion(charSheet, 0*17, 10*17, 16, 16);
         font = new BitmapFont();
 
@@ -125,8 +126,8 @@ public class GameScreen implements Screen, InputProcessor {
                 switch (world.eval(world.getX() - 20 + x, world.getY() - 15 + y)) {
                     case LAND: batch.draw(land, 16*x, 16*y); break;
                     case BOX: batch.draw(land, 16*x, 16*y);
-                        batch.draw(tree, 16*x, 16*y); break;
-                    case MUD: batch.draw(sand, 16*x, 16*y); break;
+                        batch.draw(box, 16*x, 16*y); break;
+                    case MUD: batch.draw(mud, 16*x, 16*y); break;
                     case WATER: batch.draw(water, 16*x, 16*y); break;
                     default: break;
                 }
