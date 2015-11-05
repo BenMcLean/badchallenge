@@ -11,8 +11,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import net.benmclean.badchallenge.model.GameWorld;
-import net.benmclean.badchallenge.model.TileEnum;
+import net.benmclean.badchallenge.controller.GameWorldController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +42,7 @@ public class GameScreen implements Screen, InputProcessor {
     public static final double REPEAT_RATE = 0.12;
     private double timeSinceRepeat = 0;
 
-    private GameWorld world = new GameWorld(SEED);
+    private GameWorldController world = new GameWorldController(SEED);
 
     public final static ArrayList<Integer> TRACKED_KEYS_ARRAY = new ArrayList<Integer>(Arrays.asList(
             Input.Keys.UP,
@@ -97,13 +96,13 @@ public class GameScreen implements Screen, InputProcessor {
     public void moveFromInput (int keycode) {
         switch (keycode) {
             case Input.Keys.ESCAPE: Gdx.app.exit();
-            case Input.Keys.UP: if (TileEnum.canStep(world.eval(posX, posY + 1)))
+            case Input.Keys.UP: if (world.eval(posX, posY + 1).canStep())
                 posY++; break;
-            case Input.Keys.RIGHT: if (TileEnum.canStep(world.eval(posX + 1, posY)))
+            case Input.Keys.RIGHT: if (world.eval(posX + 1, posY).canStep())
                 posX++; break;
-            case Input.Keys.DOWN: if (TileEnum.canStep(world.eval(posX, posY - 1)))
+            case Input.Keys.DOWN: if (world.eval(posX, posY - 1).canStep())
                 posY--; break;
-            case Input.Keys.LEFT: if (TileEnum.canStep(world.eval(posX - 1, posY)))
+            case Input.Keys.LEFT: if (world.eval(posX - 1, posY).canStep())
                 posX--; break;
             case Input.Keys.SPACE:
                 posX = 0;

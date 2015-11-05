@@ -5,13 +5,13 @@ import java.util.HashMap;
 public class GameWorld {
     private WorldGenerator genesis;
     public static final int CHUNK_SIZE = 16;
-    public HashMap<String, TileEnum[][]> chunk = new HashMap<String, TileEnum[][]>();
+    public HashMap<String, Tile[][]> chunk = new HashMap<String, Tile[][]>();
 
     public GameWorld (long SEED) {
         genesis = new WorldGenerator(SEED);
     }
 
-    public TileEnum genesisEval (int x, int y) {
+    public Tile genesisEval (int x, int y) {
         return genesis.eval(x, y);
     }
 
@@ -19,17 +19,24 @@ public class GameWorld {
         return genesis.getSeed();
     }
 
-    public TileEnum eval (int x, int y) {
+    public Tile eval (int x, int y) {
         if (!chunk.containsKey(chunkName(x, y))) {
             generateChunk(x, y);
         }
         return chunk.get(chunkName(x, y))[withinChunk(x)][withinChunk(y)];
     }
 
+    public void set(int x, int y, Tile value) {
+        if (!chunk.containsKey(chunkName(x, y))) {
+            generateChunk(x, y);
+        }
+        chunk.get(chunkName(x, y))[withinChunk(x)][withinChunk(y)] = value;
+    }
+
     public void generateChunk(int x, int y) {
         int startX = chunkToCoord(coordToChunk(x));
         int startY = chunkToCoord(coordToChunk(y));
-        chunk.put(chunkName(x, y), new TileEnum[CHUNK_SIZE][CHUNK_SIZE]);
+        chunk.put(chunkName(x, y), new Tile[CHUNK_SIZE][CHUNK_SIZE]);
         for (int row=startX; row<startX+CHUNK_SIZE; row++)
             for (int col=startY; col<startY+CHUNK_SIZE; col++)
                 chunk.get(chunkName(x, y))[withinChunk(row)][withinChunk(col)] =
