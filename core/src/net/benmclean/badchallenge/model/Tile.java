@@ -20,6 +20,11 @@ public enum Tile {
 
     public Tile afterPush() { return afterPush(this); }
     public static Tile afterPush(Tile x) {
+        return Tile.BOX;
+    }
+
+    public Tile behindPush() { return behindPush(this); }
+    public static Tile behindPush(Tile x) {
         return Tile.LAND;
     }
 }
