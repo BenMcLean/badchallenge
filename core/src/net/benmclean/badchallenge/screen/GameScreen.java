@@ -168,6 +168,9 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (TRACKED_KEYS.contains(keycode)) keyPressed[keyInt(keycode)] = true;
+
+        if (keycode == Input.Keys.ENTER && (keyPressed[keyInt(Input.Keys.ALT_LEFT)] || keyPressed[keyInt(Input.Keys.ALT_RIGHT)]))
+            toggleFullscreen();
         timeSinceRepeat = 0;
         moveFromInput(keycode);
         return true;
@@ -207,5 +210,9 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+    public void toggleFullscreen() {
+        Gdx.graphics.setDisplayMode(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, !Gdx.graphics.isFullscreen());
     }
 }
