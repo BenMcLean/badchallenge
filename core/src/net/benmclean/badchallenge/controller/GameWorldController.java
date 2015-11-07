@@ -32,6 +32,10 @@ public class GameWorldController {
         posY = value;
     }
 
+    public void setPos (int x, int y) {
+        posX = x; posY = y;
+    }
+
     public Tile eval(int x, int y) {
         return world.eval(x, y);
     }

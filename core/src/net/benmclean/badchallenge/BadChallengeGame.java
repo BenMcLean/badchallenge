@@ -2,7 +2,7 @@ package net.benmclean.badchallenge;
 
 import com.badlogic.gdx.Game;
 
-import net.benmclean.badchallenge.screen.GameScreen;
+import net.benmclean.badchallenge.view.GameScreen;
 
 public class BadChallengeGame extends Game {
     @Override

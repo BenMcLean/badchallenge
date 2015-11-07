@@ -1,4 +1,4 @@
-package net.benmclean.badchallenge.screen;
+package net.benmclean.badchallenge.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
