@@ -213,6 +213,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     public void toggleFullscreen() {
-        Gdx.graphics.setDisplayMode(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, !Gdx.graphics.isFullscreen());
+        // libGDX changed it's API to break this function
+        //Gdx.graphics.setDisplayMode(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, !Gdx.graphics.isFullscreen());
     }
 }
