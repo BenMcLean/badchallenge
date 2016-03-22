@@ -34,8 +34,8 @@ public class GameScreen implements Screen, InputProcessor {
     private BitmapFont font;
 
     public static final long SEED = 42; //new Random().nextInt();
-    public static final int VIRTUAL_WIDTH=640;
-    public static final int VIRTUAL_HEIGHT=480;
+    public static final int VIRTUAL_WIDTH = 640;
+    public static final int VIRTUAL_HEIGHT = 480;
     public static Random random = new Random(SEED);
 
     public static final double REPEAT_RATE = 0.12;
@@ -78,8 +78,8 @@ public class GameScreen implements Screen, InputProcessor {
         land = new TextureRegion(img, 85, 17, 16, 16);
         mud = new TextureRegion(img, 102, 17, 16, 16);
         //tree = new TextureRegion(img, 391, 153, 16, 16);
-        box = new TextureRegion(img, 28*17, 2*17, 16, 16);
-        character = new TextureRegion(charSheet, 0*17, 10*17, 16, 16);
+        box = new TextureRegion(img, 28 * 17, 2 * 17, 16, 16);
+        character = new TextureRegion(charSheet, 0 * 17, 10 * 17, 16, 16);
         font = new BitmapFont();
 
         for (int key : TRACKED_KEYS_ARRAY)
@@ -87,19 +87,28 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.input.setInputProcessor(this);
     }
 
-    public void moveFromInput () {
+    public void moveFromInput() {
         for (int key = 0; key < TRACKED_KEYS_ARRAY.size(); key++)
             if (keyPressed[key])
                 moveFromInput(TRACKED_KEYS_ARRAY.get(key));
     }
 
-    public void moveFromInput (int keycode) {
+    public void moveFromInput(int keycode) {
         switch (keycode) {
-            case Input.Keys.ESCAPE: Gdx.app.exit();
-            case Input.Keys.UP: world.move(Direction.NORTH); break;
-            case Input.Keys.RIGHT: world.move(Direction.EAST); break;
-            case Input.Keys.DOWN: world.move(Direction.SOUTH); break;
-            case Input.Keys.LEFT: world.move(Direction.WEST); break;
+            case Input.Keys.ESCAPE:
+                Gdx.app.exit();
+            case Input.Keys.UP:
+                world.move(Direction.NORTH);
+                break;
+            case Input.Keys.RIGHT:
+                world.move(Direction.EAST);
+                break;
+            case Input.Keys.DOWN:
+                world.move(Direction.SOUTH);
+                break;
+            case Input.Keys.LEFT:
+                world.move(Direction.WEST);
+                break;
             case Input.Keys.SPACE:
                 world.setX(0);
                 world.setY(0);
@@ -108,7 +117,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     @Override
-    public void render (float delta) {
+    public void render(float delta) {
 
         timeSinceRepeat += delta;
 
@@ -121,19 +130,28 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
 
-        for (int x=0; x<40; x++)
-            for (int y=0; y<30; y++) {
+        for (int x = 0; x < 40; x++)
+            for (int y = 0; y < 30; y++) {
                 switch (world.eval(world.getX() - 20 + x, world.getY() - 15 + y)) {
-                    case LAND: batch.draw(land, 16*x, 16*y); break;
-                    case BOX: batch.draw(land, 16*x, 16*y);
-                        batch.draw(box, 16*x, 16*y); break;
-                    case MUD: batch.draw(mud, 16*x, 16*y); break;
-                    case WATER: batch.draw(water, 16*x, 16*y); break;
-                    default: break;
+                    case LAND:
+                        batch.draw(land, 16 * x, 16 * y);
+                        break;
+                    case BOX:
+                        batch.draw(land, 16 * x, 16 * y);
+                        batch.draw(box, 16 * x, 16 * y);
+                        break;
+                    case MUD:
+                        batch.draw(mud, 16 * x, 16 * y);
+                        break;
+                    case WATER:
+                        batch.draw(water, 16 * x, 16 * y);
+                        break;
+                    default:
+                        break;
                 }
             }
 
-        batch.draw(character, 16*20, 16*15);
+        batch.draw(character, 16 * 20, 16 * 15);
 
 //        font.draw(batch, "(" + Integer.toString(posX) + ", " + Integer.toString(posY) + ") is chunk " + world.chunkName(posX, posY), 0, 16);
         batch.end();
@@ -213,7 +231,9 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     public void toggleFullscreen() {
-        // libGDX changed it's API to break this function
-        //Gdx.graphics.setDisplayMode(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, !Gdx.graphics.isFullscreen());
+        if (Gdx.graphics.isFullscreen())
+            Gdx.graphics.setWindowedMode(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        else
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
     }
 }
